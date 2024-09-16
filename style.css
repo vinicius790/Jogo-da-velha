@@ -1,0 +1,78 @@
+/* style.css */
+@import './components/board.css';
+@import './components/cell.css';
+@import './components/buttons.css';
+@import './utils/variables.css';
+@import './utils/mixins.css';
+
+/* Estilos globais */
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f0f0f0;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+.board {
+  /* Estilos do tabuleiro */
+  display: flex;
+  flex-wrap: wrap;
+  width: 300px;
+  height: 300px;
+  border: 2px solid border-color; /* Utilizando variável */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); /* Adicionando sombra */
+}
+
+.cell {
+  /* Estilos das células */
+  width: 33.33%;
+  height: 33.33%;
+  border: 1px solid border-color;
+  font-size: 5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  background-color: cell-background-color;
+  transition: background-color 0.3s ease; /* Transição suave para o hover */
+
+  @include hover { /* Utilizando mixin */
+    background-color: $cell-hover-color;
+  }
+}
+
+.winner {
+  background-color: lightgreen; /* Cor de fundo das células vencedoras */
+}
+
+.loser {
+  background-color: lightcoral; /* Cor de fundo das células perdedoras */
+}
+
+.turn-indicator {
+  font-size: 1.5rem;
+  margin-top: 1rem;
+}
+
+.reset-button {
+  margin-top: 1rem;
+}
+
+:root {
+  --border-color: #333;
+  --cell-background-color: #f0f0f0;
+  --cell-hover-color: #e0e0e0;
+  /* Outras variáveis */
+}
+
+@mixin hover {
+  &:hover {
+    @content;
+  }
+}
