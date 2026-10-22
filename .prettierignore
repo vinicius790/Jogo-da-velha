@@ -1,0 +1,7 @@
+dist/
+node_modules/
+package-lock.json
+sbom.cdx.json
+playwright-report/
+test-results/
+LOG_REORGANIZACAO.txt

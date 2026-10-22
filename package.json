@@ -1,0 +1,47 @@
+{
+  "name": "jogo-da-velha-omega",
+  "version": "12.1.0",
+  "private": true,
+  "description": "OMEGA Tic-Tac-Toe: jogo da velha generalizado (3×3 a 12×12, variantes Clássica, Misère e Gravity) com IA em cinco níveis, replays, puzzles, torneios, PWA offline e multiplayer por WebSocket.",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "node --test \"tests/*.test.mjs\"",
+    "test:watch": "node --test --watch \"tests/*.test.mjs\"",
+    "e2e": "playwright test",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "verify-build": "node scripts/verify-build.mjs",
+    "check": "npm run lint && npm run format:check && npm test && npm run build && npm run verify-build",
+    "server": "node server/server.mjs",
+    "benchmark": "node scripts/benchmark.mjs",
+    "smoke": "node scripts/smoke.mjs",
+    "audit": "node scripts/static-audit.mjs",
+    "ui-audit": "node scripts/ui-audit.mjs",
+    "syntax": "node scripts/syntax-check.mjs",
+    "doctor": "node scripts/doctor.mjs",
+    "sbom": "node scripts/sbom.mjs",
+    "release-report": "node scripts/release-report.mjs"
+  },
+  "dependencies": {
+    "ws": "8.22.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "@playwright/test": "1.63.0",
+    "eslint": "10.11.0",
+    "globals": "17.13.0",
+    "prettier": "3.9.9",
+    "vite": "8.3.2"
+  },
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "license": "MIT",
+  "exports": {
+    ".": "./src/index.js"
+  }
+}

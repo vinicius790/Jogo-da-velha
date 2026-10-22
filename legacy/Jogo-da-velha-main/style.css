@@ -1,0 +1,65 @@
+/* Projeto original (3 arquivos). O arquivo usava sintaxe de Sass (@mixin, @include, $variável)
+   e importava folhas inexistentes; aqui está o mesmo visual em CSS válido. */
+:root {
+  --border-color: #333;
+  --cell-background-color: #f0f0f0;
+  --cell-hover-color: #e0e0e0;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f0f0f0;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+.board {
+  display: flex;
+  flex-wrap: wrap;
+  width: 300px;
+  height: 300px;
+  margin: 0 auto;
+  border: 2px solid var(--border-color);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.cell {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+  width: 33.33%;
+  height: 33.33%;
+  border: 1px solid var(--border-color);
+  background-color: var(--cell-background-color);
+  font-size: 5rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.cell:hover {
+  background-color: var(--cell-hover-color);
+}
+
+.winner {
+  background-color: lightgreen;
+}
+
+.loser {
+  background-color: lightcoral;
+}
+
+.turn-indicator {
+  font-size: 1.5rem;
+  margin-top: 1rem;
+}
+
+.reset-button {
+  margin-top: 1rem;
+}

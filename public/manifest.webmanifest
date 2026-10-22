@@ -1,0 +1,15 @@
+{
+  "name": "OMEGA Tic-Tac-Toe",
+  "short_name": "OMEGA TTT",
+  "description": "Jogo da velha de 3×3 a 12×12 com IA em cinco níveis, puzzles, torneios e replays.",
+  "lang": "pt-BR",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#070b16",
+  "theme_color": "#070b16",
+  "icons": [
+    { "src": "icons/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "icons/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
+  ]
+}

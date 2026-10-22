@@ -1,37 +1,748 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Jogo da Velha</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css">
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-  <div class="container">
-    <div class="row justify-content-center">
-      <div class="col-8">
-        <h1 class="text-center">Jogo da Velha</h1>
-        <div class="board">
-          <div class="cell" data-index="0"></div>
-          <div class="cell" data-index="1"></div>
-          <div class="cell" data-index="2"></div>
-          <div class="cell" data-index="3"></div>
-          <div class="cell" data-index="4"></div>
-          <div class="cell" data-index="5"></div>
-          <div class="cell" data-index="6"></div>
-          <div class="cell" data-index="7"></div>
-          <div class="cell" data-index="8"></div>
+<!doctype html>
+<html lang="pt-BR" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#070b16" />
+    <meta name="color-scheme" content="dark light" />
+    <meta
+      name="description"
+      content="OMEGA Tic-Tac-Toe: jogo da velha de 3×3 a 12×12 com IA em cinco níveis, puzzles, torneios, replays, modo offline e multiplayer."
+    />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self' ws: wss:; worker-src 'self'; manifest-src 'self'; base-uri 'self'"
+    />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="icon" href="./icons/icon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="./src/ui/styles/app.css" />
+    <title>OMEGA Tic-Tac-Toe</title>
+  </head>
+  <body>
+    <a class="skip-link" href="#main" data-i18n="nav.skip">Pular para o conteúdo</a>
+    <div id="app" class="app-shell">
+      <header class="topbar glass">
+        <div class="brand">
+          <span class="brand-mark" aria-hidden="true">Ω</span>
+          <div><strong>OMEGA</strong><span>Tic-Tac-Toe</span></div>
         </div>
-        <div class="text-center">
-          <p class="turn-indicator">Vez do jogador: X</p>
-          <p class="winner-message"></p>
-          <button class="btn btn-primary reset-button">Reiniciar</button>
+        <nav class="tabs" aria-label="Navegação principal" data-i18n-label="nav.main">
+          <button type="button" class="tab active" data-view="play" data-i18n="nav.play">
+            Jogar
+          </button>
+          <button type="button" class="tab" data-view="analytics" data-i18n="nav.analytics">
+            Análise
+          </button>
+          <button type="button" class="tab" data-view="tournaments" data-i18n="nav.tournaments">
+            Torneios
+          </button>
+          <button type="button" class="tab" data-view="puzzles" data-i18n="nav.puzzles">
+            Puzzles
+          </button>
+          <button type="button" class="tab" data-view="replays" data-i18n="nav.replays">
+            Replays
+          </button>
+        </nav>
+        <div class="top-actions">
+          <span id="network-status" class="badge" role="status">Online</span>
+          <button
+            type="button"
+            id="theme-button"
+            class="icon-button"
+            title="Alternar tema"
+            aria-label="Alternar tema"
+            data-i18n-title="action.theme"
+          >
+            ◐
+          </button>
+          <button
+            type="button"
+            id="sound-button"
+            class="icon-button"
+            title="Som"
+            aria-label="Som"
+            aria-pressed="true"
+            data-i18n-title="action.sound"
+          >
+            ♫
+          </button>
+          <button
+            type="button"
+            id="settings-button"
+            class="icon-button"
+            title="Configurações"
+            aria-label="Configurações"
+            data-i18n-title="action.settings"
+          >
+            ⚙
+          </button>
+          <button
+            type="button"
+            id="install-button"
+            class="icon-button"
+            title="Instalar aplicativo"
+            aria-label="Instalar aplicativo"
+            data-i18n-title="action.install"
+            hidden
+          >
+            ⇩
+          </button>
         </div>
-      </div>
+      </header>
+
+      <main id="main" class="main" tabindex="-1">
+        <!-- ===== Jogar ===== -->
+        <section class="workspace view" data-view-panel="play">
+          <aside class="panel glass sidebar">
+            <div class="panel-head"><h2 data-i18n="config.title">Configuração</h2></div>
+            <div class="field-grid">
+              <label
+                ><span data-i18n="config.mode">Modo</span>
+                <select id="mode">
+                  <option value="ai" data-i18n="mode.ai">Contra a IA</option>
+                  <option value="local" data-i18n="mode.local">2 jogadores</option>
+                  <option value="spectator" data-i18n="mode.spectator">IA × IA</option>
+                  <option value="online" data-i18n="mode.online">Online</option>
+                </select>
+              </label>
+              <label
+                ><span data-i18n="config.size">Tamanho</span>
+                <select id="size">
+                  <option value="3">3×3</option>
+                  <option value="4">4×4</option>
+                  <option value="5">5×5</option>
+                  <option value="6">6×6</option>
+                  <option value="7">7×7</option>
+                  <option value="8">8×8</option>
+                  <option value="9">9×9</option>
+                  <option value="10">10×10</option>
+                  <option value="11">11×11</option>
+                  <option value="12">12×12</option>
+                </select>
+              </label>
+              <label
+                ><span data-i18n="config.win">Vence com</span>
+                <select id="win"></select>
+              </label>
+              <label
+                ><span data-i18n="config.variant">Variante</span>
+                <select id="variant">
+                  <option value="classic" data-i18n="variant.classic">Clássica</option>
+                  <option value="misere" data-i18n="variant.misere">Misère</option>
+                  <option value="gravity" data-i18n="variant.gravity">Gravity</option>
+                  <option value="hex" data-i18n="variant.hex">Hexagonal</option>
+                  <option value="fade" data-i18n="variant.fade">Infinito / Fade</option>
+                </select>
+              </label>
+              <label
+                ><span data-i18n="config.difficulty">Nível da IA</span>
+                <select id="difficulty">
+                  <option value="easy" data-i18n="level.easy">Fácil</option>
+                  <option value="normal" data-i18n="level.normal" selected>Médio</option>
+                  <option value="hard" data-i18n="level.hard">Difícil</option>
+                  <option value="expert" data-i18n="level.expert">Especialista</option>
+                  <option value="omega" data-i18n="level.omega">Imbatível</option>
+                </select>
+              </label>
+              <label
+                ><span data-i18n="config.symbol">Seu símbolo</span>
+                <select id="symbol">
+                  <option value="X" data-i18n="symbol.x">X (começa)</option>
+                  <option value="O">O</option>
+                </select>
+              </label>
+              <label
+                ><span data-i18n="config.clockMove">Tempo por lance</span>
+                <select id="clock-move">
+                  <option value="0" data-i18n="clock.off">Sem limite</option>
+                  <option value="5000">5 s</option>
+                  <option value="10000">10 s</option>
+                  <option value="30000">30 s</option>
+                  <option value="60000">60 s</option>
+                </select>
+              </label>
+              <label
+                ><span data-i18n="config.clockGame">Tempo por partida</span>
+                <select id="clock-game">
+                  <option value="0" data-i18n="clock.off">Sem limite</option>
+                  <option value="60000">1 min</option>
+                  <option value="180000">3 min</option>
+                  <option value="300000">5 min</option>
+                  <option value="600000">10 min</option>
+                </select>
+              </label>
+            </div>
+            <p class="hint-text" data-i18n="clock.help">
+              O relógio vale contra a IA, entre 2 jogadores e nas salas online (quem cria a sala
+              escolhe; o servidor controla o tempo). Quem estoura o tempo perde.
+            </p>
+            <p id="variant-help" class="hint-text"></p>
+            <div class="button-grid">
+              <button type="button" id="start" class="primary" data-i18n="action.start">
+                Nova partida
+              </button>
+              <button type="button" id="hint" data-i18n="action.hint">Dica</button>
+              <button type="button" id="undo" data-i18n="action.undo">Desfazer</button>
+              <button type="button" id="redo" data-i18n="action.redo">Refazer</button>
+            </div>
+            <section class="local-match-card" aria-labelledby="local-match-title">
+              <h3 id="local-match-title" data-i18n="localMatch.title">Série local</h3>
+              <p class="hint-text" data-i18n="localMatch.help">
+                Dispute um confronto melhor de 3, 5 ou 7 partidas. Empates não dão ponto e X alterna
+                a cada partida concluída.
+              </p>
+              <div id="local-match-setup" class="field-grid">
+                <label>
+                  <span data-i18n="localMatch.playerOne">Jogador 1</span>
+                  <input id="local-match-player-one" maxlength="64" autocomplete="off" />
+                </label>
+                <label>
+                  <span data-i18n="localMatch.playerTwo">Jogador 2</span>
+                  <input id="local-match-player-two" maxlength="64" autocomplete="off" />
+                </label>
+                <label>
+                  <span data-i18n="localMatch.format">Formato</span>
+                  <select id="local-match-format">
+                    <option value="3" data-i18n="localMatch.bestOf3">Melhor de 3 (2 pontos)</option>
+                    <option value="5" data-i18n="localMatch.bestOf5">Melhor de 5 (3 pontos)</option>
+                    <option value="7" data-i18n="localMatch.bestOf7">Melhor de 7 (4 pontos)</option>
+                  </select>
+                </label>
+              </div>
+              <button type="button" id="local-match-start" class="primary" data-i18n="localMatch.begin">
+                Iniciar série
+              </button>
+              <div id="local-match-live" hidden>
+                <p id="local-match-status" role="status" aria-live="polite"></p>
+                <p id="local-match-score" class="local-match-score"></p>
+                <p id="local-match-owners" class="hint-text"></p>
+                <ol id="local-match-history" data-i18n-label="localMatch.history"></ol>
+                <small id="local-match-storage-warning" data-i18n="localMatch.persistenceWarning" hidden></small>
+                <div class="button-grid">
+                  <button type="button" id="local-match-next" data-i18n="localMatch.next" hidden>
+                    Próxima partida
+                  </button>
+                  <button type="button" id="local-match-end" data-i18n="localMatch.end" hidden>
+                    Encerrar série
+                  </button>
+                </div>
+              </div>
+            </section>            <div class="online-card" id="online-card" hidden>
+              <label
+                ><span data-i18n="online.server">Servidor WebSocket</span>
+                <input id="server-url" value="ws://localhost:8787" inputmode="url" />
+              </label>
+              <label
+                ><span data-i18n="online.code">Código da sala</span>
+                <input id="room-input" maxlength="6" autocomplete="off" />
+              </label>
+              <div class="button-grid three">
+                <button type="button" id="host-room" data-i18n="online.host">Criar sala</button>
+                <button type="button" id="join-room" data-i18n="online.join">Entrar</button>
+                <button type="button" id="watch-room" data-i18n="online.watch">Assistir</button>
+              </div>
+              <small id="room-status" role="status"></small>
+              <div id="room-people" class="room-people"></div>
+              <div id="chat-box" class="chat-box" hidden>
+                <div class="chat-head">
+                  <h3 data-i18n="chat.title">Chat da sala</h3>
+                  <button
+                    type="button"
+                    id="chat-toggle"
+                    class="text-button"
+                    aria-expanded="true"
+                    aria-controls="chat-body"
+                  >
+                    <span data-i18n="chat.hide">Ocultar chat</span
+                    ><span data-i18n="chat.show" hidden>Mostrar chat</span>
+                  </button>
+                </div>
+                <div id="chat-body" class="chat-body">
+                  <ol id="chat-log" class="chat-log" aria-live="polite"></ol>
+                  <form id="chat-form" class="chat-form">
+                    <label
+                      ><span data-i18n="chat.label">Mensagem</span>
+                      <input id="chat-input" maxlength="200" autocomplete="off" />
+                    </label>
+                    <button type="submit" id="chat-send" data-i18n="chat.send">Enviar</button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </aside>
+
+          <section class="panel glass board-panel" aria-labelledby="turn">
+            <div class="board-head">
+              <div>
+                <span id="state-meta" class="badge"></span>
+                <strong id="turn" role="status"></strong>
+              </div>
+              <div class="board-tools">
+                <button
+                  type="button"
+                  id="fullscreen"
+                  class="icon-button"
+                  title="Tela cheia"
+                  aria-label="Tela cheia"
+                  data-i18n-title="action.fullscreen"
+                >
+                  ⛶
+                </button>
+                <button
+                  type="button"
+                  id="share"
+                  class="icon-button"
+                  title="Compartilhar"
+                  aria-label="Compartilhar"
+                  data-i18n-title="action.share"
+                >
+                  ⌯
+                </button>
+              </div>
+            </div>
+            <div id="board-shell" class="board-shell">
+              <div id="board" class="board" role="grid"></div>
+            </div>
+            <div class="board-foot">
+              <span id="moves"></span>
+              <span id="timer">00:00</span>
+              <span id="clock-x" class="clock" role="timer" hidden></span>
+              <span id="clock-o" class="clock" role="timer" hidden></span>
+              <button type="button" id="replay-now" class="text-button" data-i18n="action.replay">
+                Ver replay
+              </button>
+            </div>
+          </section>
+
+          <aside class="panel glass insights">
+            <div class="panel-head">
+              <h2 data-i18n="insights.title">Leitura da posição</h2>
+              <button type="button" id="analyze" class="text-button" data-i18n="action.analyze">
+                Analisar
+              </button>
+            </div>
+            <dl class="metrics">
+              <div class="metric">
+                <dt data-i18n="insights.threat">Ameaça imediata</dt>
+                <dd id="threat">—</dd>
+              </div>
+              <div class="metric">
+                <dt data-i18n="insights.best">Melhor lance</dt>
+                <dd id="best-move">—</dd>
+              </div>
+              <div class="metric">
+                <dt data-i18n="insights.eval">Avaliação estática</dt>
+                <dd id="evaluation">0</dd>
+              </div>
+              <div class="metric">
+                <dt data-i18n="insights.free">Casas livres</dt>
+                <dd id="free-cells">—</dd>
+              </div>
+              <div class="metric">
+                <dt data-i18n="insights.engine">Última busca da IA</dt>
+                <dd id="engine-info">—</dd>
+              </div>
+            </dl>
+            <div class="reasoning">
+              <h3 data-i18n="insights.reasons">Explicação</h3>
+              <ol id="reasoning"></ol>
+            </div>
+            <div class="mini-chart">
+              <canvas
+                id="sparkline"
+                role="img"
+                aria-label="Avaliação ao longo da partida"
+                data-i18n-label="insights.chart"
+              ></canvas>
+            </div>
+          </aside>
+        </section>
+
+        <section class="dashboard view" data-view-panel="play">
+          <article class="panel glass card">
+            <div class="panel-head">
+              <h2 data-i18n="profile.title">Perfil</h2>
+              <span class="badge" id="level"></span>
+            </div>
+            <div class="profile">
+              <div class="avatar" aria-hidden="true">Ω</div>
+              <div><strong id="profile-name"></strong><small id="profile-glicko"></small></div>
+            </div>
+            <div class="xp"><span id="xp-bar"></span></div>
+            <div class="stats">
+              <div>
+                <strong id="played">0</strong><span data-i18n="profile.played">partidas</span>
+              </div>
+              <div><strong id="wins">0</strong><span data-i18n="profile.wins">vitórias</span></div>
+              <div><strong id="draws">0</strong><span data-i18n="profile.draws">empates</span></div>
+              <div>
+                <strong id="rating">1000</strong><span data-i18n="profile.rating">Elo</span>
+              </div>
+            </div>
+          </article>
+          <article class="panel glass card">
+            <div class="panel-head">
+              <h2 data-i18n="ach.title">Conquistas</h2>
+              <span id="achievement-total"></span>
+            </div>
+            <ul id="achievements" class="achievements"></ul>
+          </article>
+          <article class="panel glass card wide">
+            <div class="panel-head"><h2 data-i18n="ranking.title">Ranking local</h2></div>
+            <p class="hint-text" data-i18n="ranking.help">
+              Um quadro por tamanho de tabuleiro e variante.
+            </p>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th scope="col">#</th>
+                    <th scope="col" data-i18n="ranking.board">Tabuleiro</th>
+                    <th scope="col" data-i18n="ranking.rating">Elo</th>
+                    <th scope="col" data-i18n="ranking.record">V-E-D</th>
+                    <th scope="col" data-i18n="ranking.streak">Melhor sequência</th>
+                    <th scope="col" data-i18n="ranking.best">Melhores vitórias</th>
+                  </tr>
+                </thead>
+                <tbody id="ranking"></tbody>
+              </table>
+            </div>
+          </article>
+          <article class="panel glass card wide">
+            <div class="panel-head">
+              <h2 data-i18n="history.title">Histórico</h2>
+              <div class="inline-actions">
+                <button type="button" id="export" class="text-button" data-i18n="data.export">
+                  Exportar
+                </button>
+                <button
+                  type="button"
+                  id="export-secure"
+                  class="text-button"
+                  data-i18n="data.exportSecure"
+                >
+                  Backup com senha
+                </button>
+                <button type="button" id="import" class="text-button" data-i18n="data.import">
+                  Importar
+                </button>
+                <input
+                  id="import-file"
+                  type="file"
+                  accept="application/json,.json"
+                  aria-label="Arquivo de backup"
+                  data-i18n-label="data.file"
+                  hidden
+                />
+              </div>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th scope="col" data-i18n="history.date">Data</th>
+                    <th scope="col" data-i18n="history.mode">Modo</th>
+                    <th scope="col" data-i18n="history.board">Tabuleiro</th>
+                    <th scope="col" data-i18n="history.result">Resultado</th>
+                    <th scope="col" data-i18n="history.moves">Lances</th>
+                    <th scope="col" data-i18n="history.delta">Δ Elo</th>
+                  </tr>
+                </thead>
+                <tbody id="history"></tbody>
+              </table>
+            </div>
+          </article>
+        </section>
+
+        <!-- ===== Análise ===== -->
+        <section class="lab-grid view" data-view-panel="analytics" hidden>
+          <article class="panel glass lab-card">
+            <div class="panel-head"><h2 data-i18n="analytics.performance">Seu desempenho</h2></div>
+            <div class="chart-box">
+              <canvas
+                id="rating-chart"
+                role="img"
+                aria-label="Evolução do Elo"
+                data-i18n-label="analytics.chart"
+              ></canvas>
+            </div>
+            <dl id="analytics-summary" class="metrics"></dl>
+          </article>
+          <article class="panel glass lab-card">
+            <div class="panel-head"><h2 data-i18n="arena.title">Arena IA × IA</h2></div>
+            <p class="hint-text" data-i18n="arena.help">
+              Simula partidas reais entre dois níveis no tabuleiro escolhido na aba Jogar.
+            </p>
+            <div class="field-grid three">
+              <label
+                ><span data-i18n="arena.x">IA de X</span>
+                <select id="arena-x"></select>
+              </label>
+              <label
+                ><span data-i18n="arena.o">IA de O</span>
+                <select id="arena-o"></select>
+              </label>
+              <label
+                ><span data-i18n="arena.games">Partidas</span>
+                <select id="arena-games">
+                  <option value="100">100</option>
+                  <option value="1000">1.000</option>
+                  <option value="10000">10.000</option>
+                </select>
+              </label>
+            </div>
+            <div class="button-grid">
+              <button type="button" id="arena-run" class="primary" data-i18n="arena.run">
+                Simular
+              </button>
+              <button type="button" id="arena-stop" data-i18n="arena.stop" disabled>Parar</button>
+            </div>
+            <progress
+              id="arena-progress"
+              value="0"
+              max="1"
+              aria-label="Progresso da simulação"
+              data-i18n-label="arena.progress"
+            ></progress>
+            <dl id="arena-results" class="metrics" aria-live="polite"></dl>
+          </article>
+          <article class="panel glass lab-card wide">
+            <div class="panel-head">
+              <h2 data-i18n="lab.title">Laboratório de motores</h2>
+              <button type="button" id="run-engine-lab" class="secondary" data-i18n="lab.run">
+                Comparar níveis na posição atual
+              </button>
+            </div>
+            <p class="hint-text" data-i18n="lab.help">
+              Cada nível escolhe um lance para a posição da partida em andamento; a tabela mostra o
+              que cada busca fez de fato.
+            </p>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th scope="col" data-i18n="lab.level">Nível</th>
+                    <th scope="col" data-i18n="lab.move">Lance</th>
+                    <th scope="col" data-i18n="lab.algorithm">Algoritmo</th>
+                    <th scope="col" data-i18n="lab.depth">Profundidade</th>
+                    <th scope="col" data-i18n="lab.nodes">Nós</th>
+                    <th scope="col" data-i18n="lab.time">Tempo</th>
+                  </tr>
+                </thead>
+                <tbody id="engine-lab-output"></tbody>
+              </table>
+            </div>
+            <dl id="session-metrics" class="metrics"></dl>
+          </article>
+        </section>
+
+        <!-- ===== Torneios ===== -->
+        <section class="lab-grid view" data-view-panel="tournaments" hidden>
+          <article class="panel glass lab-card wide">
+            <div class="panel-head">
+              <h2 data-i18n="tournament.title">Torneios</h2>
+              <button
+                type="button"
+                id="create-tournament"
+                class="primary"
+                data-i18n="tournament.create"
+              >
+                Criar torneio
+              </button>
+            </div>
+            <p class="hint-text" data-i18n="tournament.help">
+              Pontos corridos entre você e três níveis da IA, no tabuleiro escolhido na aba Jogar.
+              Vitória vale 3 pontos e empate vale 1.
+            </p>
+            <div id="tournament-list" class="tournament-grid"></div>
+          </article>
+        </section>
+
+        <!-- ===== Puzzles ===== -->
+        <section class="lab-grid view" data-view-panel="puzzles" hidden>
+          <article class="panel glass lab-card wide">
+            <div class="panel-head">
+              <h2 data-i18n="puzzle.title">Puzzles: vença em um lance</h2>
+              <span id="puzzle-count" class="badge"></span>
+            </div>
+            <div class="inline-actions">
+              <label
+                ><span data-i18n="puzzle.size">Tabuleiro</span>
+                <select id="puzzle-size"></select>
+              </label>
+              <button type="button" id="new-puzzle" class="primary" data-i18n="puzzle.new">
+                Novo puzzle
+              </button>
+              <button type="button" id="daily-challenge" class="secondary" data-i18n="puzzle.daily">
+                Desafio diário
+              </button>
+            </div>
+            <p id="puzzle-status" role="status"></p>
+            <div class="board-shell">
+              <div id="puzzle-board" class="board small" role="grid"></div>
+            </div>
+          </article>
+        </section>
+
+        <!-- ===== Replays ===== -->
+        <section class="lab-grid view" data-view-panel="replays" hidden>
+          <article class="panel glass lab-card">
+            <div class="panel-head">
+              <h2 data-i18n="replay.title">Acervo de replays</h2>
+              <span id="replay-count" class="badge"></span>
+            </div>
+            <div class="inline-actions">
+              <button
+                type="button"
+                id="export-replays"
+                class="text-button"
+                data-i18n="replay.export"
+              >
+                Exportar acervo (.jsonl)
+              </button>
+            </div>
+            <div id="replay-list" class="replay-grid"></div>
+          </article>
+          <article class="panel glass lab-card">
+            <div class="panel-head"><h2 data-i18n="replay.player">Reprodução</h2></div>
+            <p id="replay-status" role="status"></p>
+            <div class="board-shell">
+              <div id="replay-board" class="board small" role="grid"></div>
+            </div>
+            <div class="button-grid five">
+              <button type="button" id="replay-first" data-i18n="replay.first">Início</button>
+              <button type="button" id="replay-prev" data-i18n="replay.prev">Anterior</button>
+              <button type="button" id="replay-next" data-i18n="replay.next">Próximo</button>
+              <button type="button" id="replay-last" data-i18n="replay.last">Fim</button>
+              <button type="button" id="replay-play" class="primary" data-i18n="replay.play">
+                Reproduzir
+              </button>
+            </div>
+            <ol id="study-output" class="study-list"></ol>
+            <section class="review" aria-labelledby="review-title">
+              <div class="panel-head">
+                <h3 id="review-title" data-i18n="review.title">Análise pós-jogo</h3>
+                <button
+                  type="button"
+                  id="review-next-mistake"
+                  class="text-button"
+                  data-i18n="review.nextMistake"
+                >
+                  Próximo erro
+                </button>
+              </div>
+              <p id="review-status" role="status"></p>
+              <div id="review-detail"></div>
+            </section>
+          </article>
+        </section>
+      </main>
+
+      <dialog id="settings-dialog" class="modal" aria-labelledby="settings-title">
+        <form method="dialog" class="modal-content">
+          <div class="panel-head">
+            <h2 id="settings-title" data-i18n="settings.title">Configurações</h2>
+            <button
+              type="button"
+              class="icon-button"
+              value="cancel"
+              aria-label="Fechar"
+              data-i18n-label="action.close"
+            >
+              ×
+            </button>
+          </div>
+          <label
+            ><span data-i18n="settings.name">Nome do jogador</span>
+            <input id="settings-name" maxlength="40" autocomplete="nickname" />
+          </label>
+          <label
+            ><span data-i18n="settings.language">Idioma</span>
+            <select id="settings-language">
+              <option value="pt-BR">Português (Brasil)</option>
+              <option value="en">English</option>
+              <option value="es">Español</option>
+            </select>
+          </label>
+          <label
+            ><span data-i18n="settings.motion">Animações</span>
+            <select id="settings-motion">
+              <option value="full" data-i18n="settings.motionFull">Completas</option>
+              <option value="reduced" data-i18n="settings.motionReduced">Reduzidas</option>
+            </select>
+          </label>
+          <p class="hint-text" id="app-version"></p>
+          <div class="button-row">
+            <button type="submit" class="primary" value="save" data-i18n="action.save">Salvar</button>
+          </div>
+        </form>
+      </dialog>
+
+      <dialog id="share-dialog" class="modal" aria-labelledby="share-title">
+        <form method="dialog" class="modal-content">
+          <div class="panel-head">
+            <h2 id="share-title" data-i18n="share.title">Compartilhar partida</h2>
+            <button type="button" class="icon-button" aria-label="Fechar" data-i18n-label="action.close">
+              ×
+            </button>
+          </div>
+          <label
+            ><span data-i18n="share.link">Link da partida</span>
+            <textarea id="share-code" rows="5" readonly></textarea>
+          </label>
+          <div class="button-row">
+            <button id="copy-share" class="primary" type="button" data-i18n="share.copy">
+              Copiar link
+            </button>
+          </div>
+        </form>
+      </dialog>
+
+      <dialog id="password-dialog" class="modal" aria-labelledby="password-title">
+        <form method="dialog" class="modal-content">
+          <div class="panel-head">
+            <h2 id="password-title" data-i18n="password.title">Senha do backup</h2>
+            <button
+              type="button"
+              class="icon-button"
+              value="cancel"
+              aria-label="Fechar"
+              data-i18n-label="action.close"
+            >
+              ×
+            </button>
+          </div>
+          <label
+            ><span id="password-label"></span>
+            <input id="password-input" type="password" autocomplete="off" minlength="8" />
+          </label>
+          <div class="button-row">
+            <button type="submit" class="primary" value="ok" data-i18n="action.confirm">Confirmar</button>
+          </div>
+        </form>
+      </dialog>
+
+      <dialog id="result-dialog" class="modal" aria-labelledby="result-title">
+        <div class="modal-content">
+          <h2 id="result-title"></h2>
+          <p id="result-detail"></p>
+          <div class="button-row">
+            <button type="button" id="rematch" class="primary" data-i18n="action.rematch">
+              Jogar de novo
+            </button>
+            <button type="button" id="review-game" class="secondary" data-i18n="review.open">
+              Analisar partida
+            </button>
+            <button type="button" id="close-result" class="secondary" data-i18n="action.close">
+              Fechar
+            </button>
+          </div>
+        </div>
+      </dialog>
+
+      <div id="toast" class="toast-region" role="status" aria-live="polite"></div>
+      <div id="sr-live" class="sr-only" aria-live="assertive"></div>
     </div>
-  </div>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="script.js"></script>
-</body>
+    <script type="module" src="./src/main.js"></script>
+  </body>
 </html>

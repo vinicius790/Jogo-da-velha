@@ -1,0 +1,17 @@
+services:
+  web:
+    build:
+      context: .
+      target: web
+    ports: ['8080:80']
+    restart: unless-stopped
+  realtime:
+    build:
+      context: .
+      target: realtime
+    ports: ['8787:8787']
+    environment:
+      OMEGA_SERVER_PORT: '8787'
+      # Origem do front-end servido pelo serviço `web` acima.
+      OMEGA_CORS_ORIGIN: 'http://localhost:8080'
+    restart: unless-stopped

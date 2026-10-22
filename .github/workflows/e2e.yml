@@ -1,0 +1,23 @@
+name: E2E
+
+# Testes de ponta a ponta (Playwright + Chromium) contra o build de produção,
+# incluindo o funcionamento offline do service worker.
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24.x
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run e2e

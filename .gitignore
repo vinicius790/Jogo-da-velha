@@ -1,0 +1,18 @@
+# Dependências e artefatos gerados
+node_modules/
+dist/
+coverage/
+playwright-report/
+test-results/
+release-manifest.json
+*.log
+.DS_Store
+
+# Configuração local (segredos nunca vão para o repositório)
+.env
+.env.*
+!.env.example
+
+# Arquivos da reorganização local da pasta (não fazem parte do projeto)
+BACKUP_ORIGINAL_antes_de_organizar.zip
+LOG_REORGANIZACAO.txt
